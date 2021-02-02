@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forget-Me-Now", "Forget-Me-Now.csproj", "{78D197D7-B3D0-3B2E-5F43-C5D2B41A3AF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forget-Me-Now.Editor", "Forget-Me-Now.Editor.csproj", "{742AF8C6-62ED-BF2D-49B2-2175F32B4331}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{78D197D7-B3D0-3B2E-5F43-C5D2B41A3AF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78D197D7-B3D0-3B2E-5F43-C5D2B41A3AF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78D197D7-B3D0-3B2E-5F43-C5D2B41A3AF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78D197D7-B3D0-3B2E-5F43-C5D2B41A3AF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{742AF8C6-62ED-BF2D-49B2-2175F32B4331}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{742AF8C6-62ED-BF2D-49B2-2175F32B4331}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{742AF8C6-62ED-BF2D-49B2-2175F32B4331}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{742AF8C6-62ED-BF2D-49B2-2175F32B4331}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
