@@ -14,6 +14,7 @@ public class RhythmTest : MonoBehaviour {
 
     public KMSelectable Button;
     public TextMesh Text;
+    public TextMesh Late;
     public AudioSource Sounds;
     public AudioClip[] WhatPlays;
     public Material[] LightColors;
@@ -49,6 +50,8 @@ public class RhythmTest : MonoBehaviour {
     float Latency;
     bool Paused;
     bool InvalidPress;
+    int Leniency = 2;
+    bool DoubStrike;
 
     private static int moduleIdCounter = 1;
     private int moduleId;
@@ -79,10 +82,29 @@ public class RhythmTest : MonoBehaviour {
                 Press = true;
                 Hittable = false;
             }
+            else if (DoubStrike)
+            {
+                Late.text = "Very Late";
+                Debug.LogFormat("[Rhythm Test #{0}] In order to not give unfair penalties, no strike was given on your press being just barely too late.", moduleId);
+            }
             else if (!TwitchPlaysCompatibility)
             {
-                Module.HandleStrike();
-                InvalidPress = true;
+                if (Leniency == 2)
+                {
+                    Leniency = 1;
+                    Debug.LogFormat("[Rhythm Test #{0}] You pressed the button when the module wasn't anticipating it, but this is your first miss, so no strike was given.", moduleId);
+                }
+                else if (Leniency == 1)
+                {
+                    Leniency = 0;
+                    Debug.LogFormat("[Rhythm Test #{0}] Careful now, you're out of free passes! (Button pressed at invalid time)", moduleId);
+                }
+                else
+                {
+                    Module.HandleStrike();
+                    InvalidPress = true;
+                    Debug.LogFormat("[Rhythm Test #{0}] That last press wasn't even close to accurate and you don't have any Get Out Of Jail Free cards! STRIIIIIKE!", moduleId);
+                }
             }
         }
     }
@@ -153,6 +175,8 @@ public class RhythmTest : MonoBehaviour {
                         case 15: if (Beat >= 7) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
                         case 16: Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); break;
                     }
+                DoubStrike = false;
+                Late.text = "Late";
                 TheLight.material = LightColors[0];
             }
             yield return new WaitForSeconds(0.35f);
@@ -241,12 +265,26 @@ public class RhythmTest : MonoBehaviour {
             {
                 if (!TwitchPlaysCompatibility && !InvalidPress)
                 {
-                    Module.HandleStrike();
-                    TheLight.material = LightColors[1];
-                    Debug.LogFormat("[Rhythm Test #{0}] Test {1}: You didn't even press the button. Sorry, but that's a strike.", moduleId, i);
+                    if (Leniency == 2)
+                    {
+                        Leniency = 1;
+                        Debug.LogFormat("[Rhythm Test #{0}] Test {1}: Button wasn't pressed, but this is your first miss, so no strike was given.", moduleId, i);
+                    }
+                    else if (Leniency == 1)
+                    {
+                        Leniency = 0;
+                        Debug.LogFormat("[Rhythm Test #{0}] Test {1}: Careful now, you're out of free passes! (Button not pressed at all)", moduleId, i);
+                    }
+                    else
+                    {
+                        Module.HandleStrike();
+                        TheLight.material = LightColors[1];
+                        Debug.LogFormat("[Rhythm Test #{0}] Test {1}: Completely missed, and you're out of free passes! STRIIIIIKE!", moduleId, i);
+                    }
                 }
                 else
                     Debug.LogFormat("[Rhythm Test #{0}] Test {1}: You didn't press the button near the right time.", moduleId, i);
+                DoubStrike = true;
             }
             CurrentTest = CurrentTest + 1;
             Beat = 8;
