@@ -15,8 +15,6 @@ public class RhythmTest : MonoBehaviour {
     public KMSelectable Button;
     public TextMesh Text;
     public TextMesh Late;
-    public AudioSource Sounds;
-    public AudioClip[] WhatPlays;
     public Material[] LightColors;
     public Renderer[] Test1;
     public Renderer[] Test2;
@@ -39,7 +37,6 @@ public class RhythmTest : MonoBehaviour {
     bool NotReady = true;
     int Beat = 8;
     int Resetting;
-    int CurrentTest = 1;
     bool Hittable;
     bool Press;
     bool TwitchPlaysCompatibility;
@@ -52,6 +49,7 @@ public class RhythmTest : MonoBehaviour {
     bool InvalidPress;
     int Leniency = 2;
     bool DoubStrike;
+    bool AutosolveToggle;
 
     private static int moduleIdCounter = 1;
     private int moduleId;
@@ -66,46 +64,54 @@ public class RhythmTest : MonoBehaviour {
     }
     void Pressed()
     {
-        Sounds.PlayOneShot(WhatPlays[2]);
-        Button.AddInteractionPunch(0.2f);
-        if (!ModuleSolved)
+        if (!AutosolveToggle)
         {
-            if (LatencyComp)
-                LatencyComp = false;
-            else if (NotReady)
+            Audio.PlaySoundAtTransform("Click", Button.transform);
+            Button.AddInteractionPunch(0.2f);
+            if (!ModuleSolved)
             {
-                Text.characterSize = 0.7f;
-                StartCoroutine(ItsTestTime());
-            }
-            else if (Hittable)
-            {
-                Press = true;
-                Hittable = false;
-            }
-            else if (DoubStrike)
-            {
-                Late.text = "Very Late";
-                Debug.LogFormat("[Rhythm Test #{0}] In order to not give unfair penalties, no strike was given on your press being just barely too late.", moduleId);
-            }
-            else if (!TwitchPlaysCompatibility)
-            {
-                if (Leniency == 2)
+                if (LatencyComp)
+                    LatencyComp = false;
+                else if (NotReady)
                 {
-                    Leniency = 1;
-                    Debug.LogFormat("[Rhythm Test #{0}] You pressed the button when the module wasn't anticipating it, but this is your first miss, so no strike was given.", moduleId);
+                    Text.characterSize = 0.7f;
+                    StartCoroutine(ItsTestTime());
                 }
-                else if (Leniency == 1)
+                else if (Hittable)
                 {
-                    Leniency = 0;
-                    Debug.LogFormat("[Rhythm Test #{0}] Careful now, you're out of free passes! (Button pressed at invalid time)", moduleId);
+                    Press = true;
+                    Hittable = false;
                 }
-                else
+                else if (DoubStrike)
                 {
-                    Module.HandleStrike();
-                    InvalidPress = true;
-                    Debug.LogFormat("[Rhythm Test #{0}] That last press wasn't even close to accurate and you don't have any Get Out Of Jail Free cards! STRIIIIIKE!", moduleId);
+                    Late.text = "Very Late";
+                    Debug.LogFormat("[Rhythm Test #{0}] In order to not give unfair penalties, no strike was given on your press being just barely too late.", moduleId);
+                }
+                else if (!TwitchPlaysCompatibility)
+                {
+                    if (Leniency == 2)
+                    {
+                        Leniency = 1;
+                        Debug.LogFormat("[Rhythm Test #{0}] You pressed the button when the module wasn't anticipating it, but this is your first miss, so no strike was given.", moduleId);
+                    }
+                    else if (Leniency == 1)
+                    {
+                        Leniency = 0;
+                        Debug.LogFormat("[Rhythm Test #{0}] Careful now, you're out of free passes! (Button pressed at invalid time)", moduleId);
+                    }
+                    else
+                    {
+                        Module.HandleStrike();
+                        InvalidPress = true;
+                        Debug.LogFormat("[Rhythm Test #{0}] That last press wasn't even close to accurate and you don't have any Get Out Of Jail Free cards! STRIIIIIKE!", moduleId);
+                    }
                 }
             }
+        }
+        else
+        {
+            Module.HandlePass();
+            Text.text = "sorry";
         }
     }
 
@@ -120,11 +126,11 @@ public class RhythmTest : MonoBehaviour {
         for (int i = 10; i > 0; i = i - 1)
         {
             Text.text = i.ToString();
-            Sounds.PlayOneShot(WhatPlays[0]);
+            Audio.PlaySoundAtTransform("Beep", Button.transform);
             yield return new WaitForSeconds(1f);
         }
         Text.text = "0";
-        Sounds.PlayOneShot(WhatPlays[1]);
+        Audio.PlaySoundAtTransform("Hit", Button.transform);
         LatencyComp = true;
         Prepped = true;
         while (LatencyComp)
@@ -150,7 +156,6 @@ public class RhythmTest : MonoBehaviour {
         {
             InvalidPress = false;
             Playing = true;
-            i = CurrentTest;
             Hittable = false;
             for (int j = 0; j < 7; j++)
             {
@@ -158,33 +163,26 @@ public class RhythmTest : MonoBehaviour {
                     yield return new WaitForSeconds(0.5f);
                     switch (i)
                     {
-                        case 1: Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); break;
-                        case 2: Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); break;
-                        case 3: Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); break;
-                        case 4: if (Beat >= 2) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 5: if (Beat >= 2) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 6: if (Beat >= 3) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 7: if (Beat >= 3) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 8: if (Beat >= 4) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 9: if (Beat >= 4) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 10: if (Beat >= 5) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 11: if (Beat >= 5) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 12: if (Beat >= 6) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 13: if (Beat >= 6) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 14: if (Beat >= 7) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 15: if (Beat >= 7) { Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); } else Text.text = ""; break;
-                        case 16: Text.text = Beat.ToString(); Sounds.PlayOneShot(WhatPlays[0]); break;
+                        case 1: case 2: case 3: case 16: Text.text = Beat.ToString(); Audio.PlaySoundAtTransform("Beep", Button.transform); break;
+                        case 4: case 5: if (Beat >= 2) { Text.text = Beat.ToString(); Audio.PlaySoundAtTransform("Beep", Button.transform); } else Text.text = ""; break;
+                        case 6: case 7: if (Beat >= 3) { Text.text = Beat.ToString(); Audio.PlaySoundAtTransform("Beep", Button.transform); } else Text.text = ""; break;
+                        case 8: case 9: if (Beat >= 4) { Text.text = Beat.ToString(); Audio.PlaySoundAtTransform("Beep", Button.transform); } else Text.text = ""; break;
+                        case 10: case 11: if (Beat >= 5) { Text.text = Beat.ToString(); Audio.PlaySoundAtTransform("Beep", Button.transform); } else Text.text = ""; break;
+                        case 12: case 13: if (Beat >= 6) { Text.text = Beat.ToString(); Audio.PlaySoundAtTransform("Beep", Button.transform); } else Text.text = ""; break;
+                        case 14: case 15: if (Beat >= 7) { Text.text = Beat.ToString(); Audio.PlaySoundAtTransform("Beep", Button.transform); } else Text.text = ""; break;
                     }
-                DoubStrike = false;
-                Late.text = "Late";
-                TheLight.material = LightColors[0];
+                    DoubStrike = false;
+                    Late.text = "Late";
+                    TheLight.material = LightColors[0];
             }
+            if (AutosolveToggle)
+                break;
             yield return new WaitForSeconds(0.35f);
             if (TwitchPlaysCompatibility)
             {
                 yield return new WaitForSeconds(0.15f);
                 Text.text = "0";
-                Sounds.PlayOneShot(WhatPlays[1]);
+                Audio.PlaySoundAtTransform("Hit", Button.transform);
                 yield return new WaitForSeconds(Latency - 0.15f);
             }
             Hittable = true;
@@ -194,7 +192,7 @@ public class RhythmTest : MonoBehaviour {
                 if (j == 4)
                 {
                     Text.text = "0";
-                    Sounds.PlayOneShot(WhatPlays[1]);
+                    Audio.PlaySoundAtTransform("Hit", Button.transform);
                 }
                 if (!Press && Hittable && (i < 5))
                 {
@@ -286,9 +284,10 @@ public class RhythmTest : MonoBehaviour {
                     Debug.LogFormat("[Rhythm Test #{0}] Test {1}: You didn't press the button near the right time.", moduleId, i);
                 DoubStrike = true;
             }
-            CurrentTest = CurrentTest + 1;
             Beat = 8;
         }
+        if (!AutosolveToggle)
+        {
             Text.text = "";
             yield return new WaitForSeconds(3f);
             Module.HandlePass();
@@ -297,8 +296,9 @@ public class RhythmTest : MonoBehaviour {
             Debug.LogFormat("[Rhythm Test #{0}] Test complete! Congratulations.", moduleId);
             Text.characterSize = 0.7f;
             Text.text = "Done!";
+        }
     }
-    /*/
+    /*/ THIS IS ALL DISABLED BECAUSE YOU BASICALLY CAN'T DO THIS MODULE ON TP AND I DON'T KNOW WHY I MADE CODE FOR IT
 #pragma warning disable 414
     private readonly string TwitchHelpMessage = @"!{0} prep (prepares the module for TP usage, REQUIRED TO START) | !{0} press (presses the button, the timing will be relative to your latency which is judged by '!{0} prep', will also reject command if unprepped) | !{0} pause (pauses/restarts current test, use only if lag spike occurs)";
 #pragma warning restore 414
