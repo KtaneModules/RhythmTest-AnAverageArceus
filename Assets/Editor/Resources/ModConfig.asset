@@ -11,15 +11,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: rhythmTest
-  title: Rhythm Test
-  author: AnAverageArceus
-  description: 'Test in progress...
-
-
-    A module inspired by the Rhythm Tengoku series of games, more specifically Rhythm
-    Heaven Fever. This takes the introduction section and puts half of it onto a module.
-    Just be really careful and time your presses carefully, and you''ll be good.'
-  version: v1.0
-  outputFolder: D:\Steam\steamapps\common\Keep Talking and Nobody Explodes\mods
-  previewImage: {fileID: 2800000, guid: f09e14228142e3746a71cbb413b42381, type: 3}
+  id: ModuleName
+  title: Module Name
+  author: 
+  description: 
+  version: 1.0
+  outputFolder: build
+  previewImage: {fileID: 0}
