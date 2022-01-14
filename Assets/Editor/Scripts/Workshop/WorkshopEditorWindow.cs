@@ -326,8 +326,6 @@ public class WorkshopEditorWindow : EditorWindow
         if (result.m_eResult == EResult.k_EResultOK)
         {
             currentWorkshopItem.WorkshopPublishedFileID = result.m_nPublishedFileId.m_PublishedFileId;
-            AssetDatabase.SaveAssets();
-
             PublishWorkshopChanges();
         }
     }
