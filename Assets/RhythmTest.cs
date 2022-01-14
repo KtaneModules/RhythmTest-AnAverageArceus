@@ -55,12 +55,21 @@ public class RhythmTest : MonoBehaviour {
     private int moduleId;
     private bool ModuleSolved;
 
+    private RhythmSettings Settings;
+    sealed class RhythmSettings
+    {
+        public int InputDelay = 0;
+    }
+
     void Awake()
     {
         moduleId = moduleIdCounter++;
         Button.OnInteract += delegate () { Pressed(); return false; };
         Text.characterSize = 0.3f;
         Text.text = "Rhythm Test";
+        var modConfig = new ModConfig<RhythmSettings>("Rhythm Test");
+        Settings = modConfig.Settings;
+        modConfig.Settings = Settings;
     }
     void Pressed()
     {
@@ -177,7 +186,8 @@ public class RhythmTest : MonoBehaviour {
             }
             if (AutosolveToggle)
                 break;
-            yield return new WaitForSeconds(0.35f);
+            if (Settings.InputDelay > -350) yield return new WaitForSeconds(0.35f + ((Settings.InputDelay) / 1000f));
+            else yield return new WaitForSeconds(0.35f);
             if (TwitchPlaysCompatibility)
             {
                 yield return new WaitForSeconds(0.15f);
